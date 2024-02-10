@@ -84,7 +84,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0-alpha01")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.0-alpha01")
     implementation("androidx.compose.ui:ui:1.7.0-alpha02")
-    implementation("androidx.tv:tv-foundation:1.0.0-alpha09")
+    implementation("androidx.tv:tv-foundation:1.0.0-alpha10")
     implementation("androidx.compose.material3:material3:1.2.0-alpha05")
     implementation("androidx.work:work-runtime-ktx:2.8.1")
     implementation("io.insert-koin:koin-android:3.4.2")
