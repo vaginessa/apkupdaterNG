@@ -21,13 +21,13 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -36,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.center
@@ -65,9 +66,9 @@ import kotlin.math.pow
  * @param contentColor The color of the indicator's arc and arrow.
  * @param scale A boolean controlling whether the indicator's size scales with pull progress or not.
  */
-@Composable
 // TODO(b/244423199): Consider whether the state parameter should be replaced with lambdas to
 //  enable people to use this indicator with custom pull-to-refresh components.
+@Composable
 fun PullRefreshIndicator(
     refreshing: Boolean,
     state: PullRefreshState,
@@ -80,21 +81,20 @@ fun PullRefreshIndicator(
         derivedStateOf { refreshing || state.position > 0.5f }
     }
 
-    Surface(
+    Box(
         modifier = modifier
             .size(IndicatorSize)
-            .pullRefreshIndicatorTransform(state, scale),
-        shape = SpinnerShape,
-        color = backgroundColor,
-        shadowElevation = if (showElevation) Elevation else 0.dp,
+            .pullRefreshIndicatorTransform(state, scale)
+            .shadow(if (showElevation) Elevation else 0.dp, SpinnerShape, clip = true)
+            .background(color = surfaceColorAtElevation(color = backgroundColor, elevation = Elevation), shape = SpinnerShape),
     ) {
         Crossfade(
             targetState = refreshing,
-            animationSpec = tween(durationMillis = CrossfadeDurationMs)
+            animationSpec = tween(durationMillis = CrossfadeDurationMs),
         ) { refreshing ->
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 val spinnerSize = (ArcRadius + StrokeWidth).times(2)
 
@@ -142,7 +142,7 @@ private fun CircularArrowIndicator(
                 size.center.x - arcRadius,
                 size.center.y - arcRadius,
                 size.center.x + arcRadius,
-                size.center.y + arcRadius
+                size.center.y + arcRadius,
             )
             drawArc(
                 color = color,
@@ -154,8 +154,8 @@ private fun CircularArrowIndicator(
                 size = arcBounds.size,
                 style = Stroke(
                     width = StrokeWidth.toPx(),
-                    cap = StrokeCap.Square
-                )
+                    cap = StrokeCap.Square,
+                ),
             )
             drawArrow(path, arcBounds, color, alpha, values)
         }
@@ -204,7 +204,7 @@ private fun DrawScope.drawArrow(
     // Line to tip of arrow
     arrow.lineTo(
         x = ArrowWidth.toPx() * values.scale / 2,
-        y = ArrowHeight.toPx() * values.scale
+        y = ArrowHeight.toPx() * values.scale,
     )
 
     val radius = min(bounds.width, bounds.height) / 2f
@@ -212,8 +212,8 @@ private fun DrawScope.drawArrow(
     arrow.translate(
         Offset(
             x = radius + bounds.center.x - inset,
-            y = bounds.center.y + StrokeWidth.toPx() / 2f
-        )
+            y = bounds.center.y + StrokeWidth.toPx() / 2f,
+        ),
     )
     arrow.close()
     rotate(degrees = values.endAngle) {
